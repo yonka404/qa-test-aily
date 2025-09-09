@@ -13,6 +13,12 @@ class Grafana:
             self.driver,
             "//*[@data-testid='data-testid template variable'][.//label[normalize-space()='region']]",
         )
+        self.all_checks_table: WebElement = wait_until_find_element(
+            self.driver,
+            "(//*[@data-testid='data-testid panel content']//table)[1] | "
+            "(//*[@data-testid='data-testid panel content']//*[@role='grid'])[1]",
+            By.XPATH,
+        )
 
     def get_region_dropdown(self, region_option: str) -> None:
         # Open dropdown
@@ -39,3 +45,62 @@ class Grafana:
             By.XPATH,
         )
         link.click()
+
+    def get_all_checks_table(self, row_number: int) -> dict[str, str]:
+        """
+        Return the Nth data row (1-based) from the All checks table as a dict with keys:
+        instance, job, check_type, state, reachability, latency.
+        """
+        if row_number < 1:
+            raise IndexError("row_number must be >= 1 (1 = first data row)")
+
+        # Determine whether the located element is a real <table> or a role=grid.
+        try:
+            tag = (self.all_checks_table.tag_name or "").lower()
+        except Exception:
+            tag = ""
+
+        # Collect visible data rows (skip header) and normalize to text values.
+        rows_values: list[list[str]] = []
+
+        if tag == "table":
+            # Use only rows that have <td> (skips header with <th>).
+            candidate_rows = self.all_checks_table.find_elements(By.XPATH, ".//tr[td]")
+            for r in candidate_rows:
+                cells = r.find_elements(By.XPATH, "./td")
+                values: list[str] = []
+                for c in cells[:6]:
+                    links = c.find_elements(By.XPATH, ".//a[1]")
+                    txt = (links[0].text if links else c.text).strip()
+                    values.append(txt)
+                if len(values) >= 6:
+                    rows_values.append(values)
+        else:
+            # React Data Grid: header is aria-rowindex=1; data rows start at >1.
+            candidate_rows = self.all_checks_table.find_elements(
+                By.XPATH, ".//*[@role='row'][@aria-rowindex>1]"
+            )
+            for r in candidate_rows:
+                cells = r.find_elements(By.XPATH, ".//*[@role='gridcell']")
+                values: list[str] = []
+                for c in cells[:6]:
+                    links = c.find_elements(By.XPATH, ".//a[1]")
+                    txt = (links[0].text if links else c.text).strip()
+                    values.append(txt)
+                if len(values) >= 6:
+                    rows_values.append(values)
+
+        if row_number > len(rows_values):
+            raise IndexError(
+                f"row_number {row_number} is out of range (only {len(rows_values)} rows)."
+            )
+
+        vals = rows_values[row_number - 1]
+        return {
+            "instance": vals[0],
+            "job": vals[1],
+            "check_type": vals[2],
+            "state": vals[3],
+            "reachability": vals[4],
+            "latency": vals[5],
+        }

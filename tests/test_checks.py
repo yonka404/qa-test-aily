@@ -1,10 +1,12 @@
 from pages.grafana import Grafana
 from pages.checks import Checks
 
+HOME_URL = "https://play.grafana.org/a/grafana-synthetic-monitoring-app/home"
+
 
 def test_checks_details(driver):
     # Step 0: Navigate to the Grafana home page
-    driver.get("https://play.grafana.org/a/grafana-synthetic-monitoring-app/home")
+    driver.get(HOME_URL)
 
     # Step 1: Select the "AMER" region from the dropdown in the Grafana home page
     grafana = Grafana(driver)
@@ -39,7 +41,8 @@ def test_checks_details(driver):
 
 def test_no_data_in_table(driver):
     # Step 0: Navigate to the Grafana home page
-    driver.get("https://play.grafana.org/a/grafana-synthetic-monitoring-app/home")
+    driver.get(HOME_URL)
+
     # Step 1: Select the "AMER" region from the dropdown in the Grafana home page
     grafana = Grafana(driver)
     grafana.get_region_dropdown("AMER")

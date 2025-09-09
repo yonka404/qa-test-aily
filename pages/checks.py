@@ -1,5 +1,4 @@
 import re
-from typing import Tuple
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException
@@ -25,22 +24,21 @@ class Checks:
         )
 
         # Store important value elements at initialization
-        self.answer_records_span = wait_until_find_element(
-            self.driver, first_span_xpath("Answer Records"), By.XPATH
-        )
-
+        # self.answer_records_span = wait_until_find_element(
+        #     self.driver, first_span_xpath("Answer Records"), By.XPATH
+        # )
         # Frequency has two spans (value + unit)
-        freq_base = section("Frequency")
-        self.frequency_value_span = wait_until_find_element(
-            self.driver,
-            f"{freq_base}//*[@data-testid='data-testid panel content']//span[1]",
-            By.XPATH,
-        )
-        self.frequency_unit_span = wait_until_find_element(
-            self.driver,
-            f"{freq_base}//*[@data-testid='data-testid panel content']//span[2]",
-            By.XPATH,
-        )
+        # freq_base = section("Frequency")
+        # self.frequency_value_span = wait_until_find_element(
+        #     self.driver,
+        #     f"{freq_base}//*[@data-testid='data-testid panel content']//span[1]",
+        #     By.XPATH,
+        # )
+        # self.frequency_unit_span = wait_until_find_element(
+        #     self.driver,
+        #     f"{freq_base}//*[@data-testid='data-testid panel content']//span[2]",
+        #     By.XPATH,
+        # )
 
     def _parse_first_number(self, text: str) -> float:
         m = re.search(r"[-+]?\d*\.?\d+", text.replace(",", ""))
@@ -85,10 +83,10 @@ class Checks:
             )
         )
 
-    def get_answer_records(self) -> int:
-        return int(float(self._safe_text(self.answer_records_span)))
+    # def get_answer_records(self) -> int:
+    #     return int(float(self._safe_text(self.answer_records_span)))
 
-    def get_frequency(self) -> Tuple[float, str]:
-        value = float(self._safe_text(self.frequency_value_span))
-        unit = self._safe_text(self.frequency_unit_span)
-        return value, unit
+    # def get_frequency(self) -> Tuple[float, str]:
+    #     value = float(self._safe_text(self.frequency_value_span))
+    #     unit = self._safe_text(self.frequency_unit_span)
+    #     return value, unit

@@ -54,8 +54,6 @@ class Checks:
         except StaleElementReferenceException:
             raise
 
-    # ---- Public getters ------------------------------------------------------
-
     def page_title(self) -> str:
         return self.title.text.strip()
 

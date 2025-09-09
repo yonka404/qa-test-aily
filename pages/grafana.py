@@ -19,6 +19,16 @@ class Grafana:
             "(//*[@data-testid='data-testid panel content']//*[@role='grid'])[1]",
             By.XPATH,
         )
+        self.probe_dropdown: WebElement = wait_until_find_element(
+            self.driver,
+            "//*[@data-testid='data-testid template variable'][.//label[normalize-space()='probe']]",
+            By.XPATH,
+        )
+        # self.error_percentage_graph: WebElement = wait_until_find_element(
+        #     self.driver,
+        #     "//*[@data-testid='data-testid Panel header All check error percentage']",
+        #     By.XPATH,
+        # )
 
     def get_region_dropdown(self, region_option: str) -> None:
         # Open dropdown
@@ -104,3 +114,30 @@ class Grafana:
             "reachability": vals[4],
             "latency": vals[5],
         }
+
+    def select_probe(self, probe_option: str) -> None:
+        # Open dropdown
+        toggle = self.probe_dropdown.find_element(
+            By.XPATH, ".//div[contains(@class,'input-suffix')]"
+        )
+        toggle.click()
+
+        # Focus the input
+        combo_input = wait_until_find_element(
+            self.driver,
+            "//*[@data-testid='data-testid template variable']"
+            "[.//label[normalize-space()='probe']]//input[@role='combobox']",
+        )
+        combo_input.send_keys(Keys.BACKSPACE)
+        combo_input.send_keys(probe_option)
+        combo_input.send_keys(Keys.ENTER)
+        combo_input.send_keys(Keys.ESCAPE)
+
+    def get_no_data_from_error_percentage_graph(self) -> str:
+        return wait_until_find_element(
+            self.driver,
+            "//h2[normalize-space()='All check error percentage']"
+            "/ancestor::section[1]//div[@data-testid='data-testid panel content']"
+            "//*[contains(normalize-space(),'No data')]",
+            By.XPATH,
+        ).text

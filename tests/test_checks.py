@@ -46,3 +46,11 @@ def test_no_data_in_table(driver):
     # Step 1: Select the "AMER" region from the dropdown in the Grafana home page
     grafana = Grafana(driver)
     grafana.get_region_dropdown("AMER")
+
+    # Step 2: Select the probe = Frankfurt
+    grafana.select_probe("Frankfurt")
+
+    # Step 3: Verify that the "All checks" table shows "No data"
+    assert (grafana.get_no_data_from_error_percentage_graph() == "No data"), (
+        "Expected 'No data' message in the 'All check error percentage' graph"
+    )

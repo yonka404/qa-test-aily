@@ -6,6 +6,8 @@ from utils.utils import wait_until_find_element
 
 
 class Grafana:
+    URL = "https://play.grafana.org/a/grafana-synthetic-monitoring-app/home"
+
     def __init__(self, driver: WebDriver):
         self.driver = driver
         # Locators
